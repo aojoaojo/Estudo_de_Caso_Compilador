@@ -1,10 +1,14 @@
 #ifndef meu_nome
 #define meu_nome
+#define EH_COMANDO 0
+#define EH_PARAMETRO_1 1
+#define EH_PARAMETRO_2 2
+#define TAMANHO_MAX 200
 
 typedef struct no no;
 struct no
 {
-    char texto_linhas[500];
+    char texto_linhas[200];
     char comando[20];
     char parametro_1[20];
     char parametro_2[20];
