@@ -366,7 +366,7 @@ int main(int argc, char *argv[])
     FILE *file_log;                                                                  // cria arquivo log
     file_log = fopen("analise.log", "w");                                            // abre arquivo log
     if (file_log == NULL)                                                            // checa se abriu
-        printf("Falha ao criar arquivo log");
+        printf("Falha ao criar arquivo log"); 
     FILE *arquivo_corrigir, *arquivo_regras; // criar files
     char texto_corrigir[500] = {}, texto_regras[500] = {};
     abrir_arquivo(&arquivo_corrigir, argv[1]);                 // abre arquivo corrigir
