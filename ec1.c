@@ -240,7 +240,7 @@ void comando_storeconst(no *atual, FILE *file_log) // checa se os parametros sao
     }
 }
 
-void comando_add(no *atual, FILE *file_log) // checa se os parametros sao numeros permitidos e printa no file log
+void comando_oper_arit(no *atual, FILE *file_log) // checa se os parametros sao numeros permitidos e printa no file log
 {
     if (eh_natural(atual->parametro_1) == 1 && eh_natural(atual->parametro_2) == 1)
         fprintf(file_log, "LINHA %d: Comando '%s' feito com sucesso e parametros corretos\n", atual->numero_da_linha, atual->comando);
@@ -255,48 +255,6 @@ void comando_add(no *atual, FILE *file_log) // checa se os parametros sao numero
     }
 }
 
-void comando_sub(no *atual, FILE *file_log) // checa se os parametros sao numeros permitidos e printa no file log
-{
-    if (eh_natural(atual->parametro_1) == 1 && eh_natural(atual->parametro_2) == 1)
-        fprintf(file_log, "LINHA %d: Comando '%s' feito com sucesso e parametros corretos\n", atual->numero_da_linha, atual->comando);
-    else
-    {
-        if (atual->parametro_1[0] == '\0')
-            fprintf(file_log, "Linha %d: O comando '%s' Não possui parâmetros\n", atual->numero_da_linha, atual->comando);
-        else if (atual->parametro_2[0] == '\0')
-            fprintf(file_log, "LINHA %d: O comando '%s' possui parâmetros a menos\n", atual->numero_da_linha, atual->comando);
-        else
-            fprintf(file_log, "LINHA %d: O comando '%s' apresenta parâmetros com valores inválidos\n", atual->numero_da_linha, atual->comando);
-    }
-}
-void comando_mul(no *atual, FILE *file_log) // checa se os parametros sao numeros permitidos e printa no file log
-{
-    if (eh_natural(atual->parametro_1) == 1 && eh_natural(atual->parametro_2) == 1)
-        fprintf(file_log, "LINHA %d: Comando '%s' feito com sucesso e parametros corretos\n", atual->numero_da_linha, atual->comando);
-    else
-    {
-        if (atual->parametro_1[0] == '\0')
-            fprintf(file_log, "Linha %d: O comando '%s' Não possui parâmetros\n", atual->numero_da_linha, atual->comando);
-        else if (atual->parametro_2[0] == '\0')
-            fprintf(file_log, "LINHA %d: O comando '%s' possui parâmetros a menos\n", atual->numero_da_linha, atual->comando);
-        else
-            fprintf(file_log, "LINHA %d: O comando '%s' apresenta parâmetros com valores inválidos\n", atual->numero_da_linha, atual->comando);
-    }
-}
-void comando_div(no *atual, FILE *file_log) // checa se os parametros sao numeros permitidos e printa no file log
-{
-    if (eh_natural(atual->parametro_1) == 1 && eh_natural(atual->parametro_2) == 1)
-    {
-        if (atual->parametro_1[0] == '\0')
-            fprintf(file_log, "Linha %d: O comando '%s' Não possui parâmetros\n", atual->numero_da_linha, atual->comando);
-        else if (atual->parametro_2[0] == '\0')
-            fprintf(file_log, "LINHA %d: O comando '%s' possui parâmetros a menos\n", atual->numero_da_linha, atual->comando);
-        else
-            fprintf(file_log, "LINHA %d: O comando '%s' apresenta parâmetros com valores inválidos\n", atual->numero_da_linha, atual->comando);
-    }
-    else
-        fprintf(file_log, "LINHA %d: Comando '%s' correto, mas apresenta erro nos parâmetros\n", atual->numero_da_linha, atual->comando);
-}
 void comando_store(no *atual, FILE *file_log) // checa se os parametros sao numeros permitidos e printa no file log
 {
     if (eh_natural(atual->parametro_1) == 1 && atual->parametro_2[0] == '\0')
@@ -339,14 +297,8 @@ void rodar_comando_reconhecido(head *lista_corrigir, FILE *file_log) // roda os 
                 comando_write(atual, file_log);
             else if (strcmp(atual->comando, "storeconst") == 0) // olha se o comando reconhecido é storeconst
                 comando_storeconst(atual, file_log);
-            else if (strcmp(atual->comando, "add") == 0) // olha se o comando reconhecido é add
-                comando_add(atual, file_log);
-            else if (strcmp(atual->comando, "sub") == 0) // olha se o comando reconhecido é sub
-                comando_sub(atual, file_log);
-            else if (strcmp(atual->comando, "mul") == 0) // olha se o comando reconhecido é mul
-                comando_mul(atual, file_log);
-            else if (strcmp(atual->comando, "div") == 0) // olha se o comando reconhecido é div
-                comando_div(atual, file_log);
+            else if ((strcmp(atual->comando, "add") == 0) || (strcmp(atual->comando, "sub") == 0) || (strcmp(atual->comando, "mul") == 0) || (strcmp(atual->comando, "div") == 0)) // olha se o comando reconhecido é add
+                comando_oper_arit(atual, file_log);
             else if (strcmp(atual->comando, "store") == 0) // olha se o comando reconhecido é store
                 comando_store(atual, file_log);
             else if (strcmp(atual->comando, "jump") == 0) // olha se o comando reconhecido é jump
@@ -366,11 +318,11 @@ int main(int argc, char *argv[])
     FILE *file_log;                                                                  // cria arquivo log
     file_log = fopen("analise.log", "w");                                            // abre arquivo log
     if (file_log == NULL)                                                            // checa se abriu
-        printf("Falha ao criar arquivo log"); 
+        printf("Falha ao criar arquivo log");
     FILE *arquivo_corrigir, *arquivo_regras; // criar files
     char texto_corrigir[500] = {}, texto_regras[500] = {};
-    abrir_arquivo(&arquivo_corrigir, argv[1]);                 // abre arquivo corrigir
-    abrir_arquivo(&arquivo_regras, argv[2]);                     // abre arquivo regras
+    abrir_arquivo(&arquivo_corrigir, argv[1]);                              // abre arquivo corrigir
+    abrir_arquivo(&arquivo_regras, argv[2]);                                // abre arquivo regras
     pegar_todo_o_texto_do_arquivo(arquivo_regras, texto_regras);            // pega todo o texto do arquivo de regras e armazena em uma string
     pegar_todo_o_texto_do_arquivo(arquivo_corrigir, texto_corrigir);        // pega todo o texto a ser corrigido e armazena em uma string
     separar_string_em_linhas(lista_texto_regras, texto_regras);             // separa strings de regras em linhas
