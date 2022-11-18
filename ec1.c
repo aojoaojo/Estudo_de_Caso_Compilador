@@ -41,7 +41,7 @@ void checa_comando(no *atual, int i, int j, int *k, int *entrar, FILE *file_log)
     for (int l = j; l < i; l++)
     {
         atual->comando[*k] = atual->texto_linhas[l]; // passa o conteúdo até o primeiro espaço como comando para o nó
-        k++;
+        *k += 1;
     }
     atual->comando[*k] = '\0';          // coloca o '\0' no final do comando
     j = i + 1;                          // j = primeira posição após o espaço
@@ -57,7 +57,7 @@ void checa_parametro_1(no *atual, int i, int j, int *k, int *entrar, FILE *file_
     for (int l = j; l < i; l++)
     {
         atual->parametro_1[*k] = atual->texto_linhas[l]; // passa o conteúdo de um espaço ao outro como parametro 1
-        k++;
+        *k += 1;
     }
     atual->parametro_1[*k] = '\0'; // coloca '\0' como último elemento do par_1
     j = i + 1;                     // proxima posição depois do par_1
@@ -77,7 +77,7 @@ void checa_parametro_2(no *atual, int i, int j, int *k, int *entrar, FILE *file_
     for (int l = j; l < i; l++) // pega o conteúdo até o prox espaço ou fim do texto
     {
         atual->parametro_2[*k] = atual->texto_linhas[l]; // passa como par_2
-        k++;
+        *k += 1 ;
     }
     atual->parametro_2[*k] = '\0'; // coloca '\0' no final do vetor
 
@@ -303,7 +303,7 @@ void rodar_comando_reconhecido(head *lista_corrigir, FILE *file_log) // roda os 
     }
 }
 
-int main(int argc, char const *argv[])
+int main(int argc, char *argv[])
 {
     head *lista_texto_corrigir = criar_lista(), *lista_texto_regras = criar_lista(); // cria lista
     FILE *file_log;                                                                  // cria arquivo log
@@ -312,12 +312,10 @@ int main(int argc, char const *argv[])
         printf("Falha ao criar arquivo log");
     FILE *arquivo_corrigir, *arquivo_regras; // criar files
     char texto_corrigir[TAMANHO_MAX] = {}, texto_regras[TAMANHO_MAX] = {};
-    char caminho_arq_corrigir[TAMANHO_MAX] = argv[1],
-         caminho_arq_regras[TAMANHO_MAX] = argv[2];
-    // printf("Digite o caminho do arquivo a ser corrigido:\n");
-    // scanf("%s", &caminho_arq_corrigir);                                                    // pega caminho do arquivo a ser aberto
-    abrir_arquivo(&arquivo_corrigir, caminho_arq_corrigir);                                // abre arquivo corrigir
-    abrir_arquivo(&arquivo_regras, caminho_arq_regras);                                    // abre arquivo regras
+    char caminho_arq_corrigir[TAMANHO_MAX] = "",
+         caminho_arq_regras[TAMANHO_MAX] = "";                                             // pega caminho do arquivo a ser aberto
+    abrir_arquivo(&arquivo_corrigir, argv[1]);                                             // abre arquivo corrigir
+    abrir_arquivo(&arquivo_regras, argv[2]);                                               // abre arquivo regras
     pegar_todo_o_texto_do_arquivo(arquivo_regras, texto_regras, lista_texto_regras);       // pega todo o texto do arquivo de regras e armazena em uma string
     pegar_todo_o_texto_do_arquivo(arquivo_corrigir, texto_corrigir, lista_texto_corrigir); // pega todo o texto a ser corrigido e armazena em uma string
     separar_linhas_em_parametros(lista_texto_regras, file_log);                            // separa comando e parametros de regras
