@@ -360,7 +360,7 @@ void rodar_comando_reconhecido(head *lista_corrigir, FILE *file_log) // roda os 
     }
 }
 
-int main()
+int main(int argc, char *argv[])
 {
     head *lista_texto_corrigir = criar_lista(), *lista_texto_regras = criar_lista(); // cria lista
     FILE *file_log;                                                                  // cria arquivo log
@@ -369,12 +369,8 @@ int main()
         printf("Falha ao criar arquivo log");
     FILE *arquivo_corrigir, *arquivo_regras; // criar files
     char texto_corrigir[500] = {}, texto_regras[500] = {};
-    char caminho_arq_corrigir[200] = "",
-         caminho_arq_regras[200] = "/home/aojoaojov/ec1_do_zero/ec1_do_zero/ec1/regras.txt";
-    printf("Digite o caminho do arquivo a ser corrigido:\n");
-    scanf("%s", &caminho_arq_corrigir);                                     // pega caminho do arquivo a ser aberto
-    abrir_arquivo(&arquivo_corrigir, caminho_arq_corrigir);                 // abre arquivo corrigir
-    abrir_arquivo(&arquivo_regras, caminho_arq_regras);                     // abre arquivo regras
+    abrir_arquivo(&arquivo_corrigir, argv[1]);                 // abre arquivo corrigir
+    abrir_arquivo(&arquivo_regras, argv[2]);                     // abre arquivo regras
     pegar_todo_o_texto_do_arquivo(arquivo_regras, texto_regras);            // pega todo o texto do arquivo de regras e armazena em uma string
     pegar_todo_o_texto_do_arquivo(arquivo_corrigir, texto_corrigir);        // pega todo o texto a ser corrigido e armazena em uma string
     separar_string_em_linhas(lista_texto_regras, texto_regras);             // separa strings de regras em linhas
@@ -388,14 +384,14 @@ int main()
     {
         no *aux = atual_corrigir;
         atual_corrigir = atual_corrigir->proximo;
-        free(aux); 
+        free(aux);
     }
     no *atual_regras = lista_texto_regras->primeiro;
     while (atual_regras != NULL)
     {
         no *aux = atual_regras;
         atual_regras = atual_regras->proximo;
-        free(aux); 
+        free(aux);
     }
     return 0;
 }
