@@ -46,6 +46,60 @@ void separar_string_em_linhas(head *linha, char *string) // separa a string em l
     }
 }
 
+void checa_comando(no *atual, int *i, int *j, int *k, int *entrar, FILE *file_log)
+{
+    for (int l = *j; l < *i; l++)
+    {
+        atual->comando[*k] = atual->texto_linhas[l]; // passa o conteúdo até o primeiro espaço como comando para o nó
+        *k += 1;
+    }
+    atual->comando[*k] = '\0';                                                                // coloca o '\0' no final do comando
+    *j = *i + 1;                                                                              // j = primeira posição após o espaço
+    *entrar += 1;                                                                             // passa a entrar em parametro 1
+    if (atual->texto_linhas[*i] == '\0')                                                      // checa se o comando não tem parametros
+        fprintf(file_log, "LINHA %d: Faltam parametros na função\n", atual->numero_da_linha); // printa no arquivo que faltam parametros na funçao
+}
+
+void checa_parametro_1(no *atual, int *i, int *j, int *k, int *entrar, FILE *file_log)
+{
+    for (int l = *j; l < *i; l++)
+    {
+        atual->parametro_1[*k] = atual->texto_linhas[l]; // passa o conteúdo de um espaço ao outro como parametro 1
+        *k += 1;
+    }
+    atual->parametro_1[*k] = '\0'; // coloca '\0' como último elemento do par_1
+    *j = *i + 1;                   // proxima posição depois do par_1
+    *entrar += 1;                  // passa pro par_2
+
+    int tam = strlen(atual->parametro_1); // pega o tamanho do par_1
+
+    for (int roda = 0; roda < tam; roda++) // checa e muda '\r' para '\0'
+    {
+        if (atual->parametro_1[roda] == '\r')
+            atual->parametro_1[roda] = '\0';
+    }
+}
+
+void checa_parametro_2(no *atual, int *i, int *j, int *k, int *entrar, FILE *file_log)
+{
+    for (int l = *j; l < *i; l++) // pega o conteúdo até o prox espaço ou fim do texto
+    {
+        atual->parametro_2[*k] = atual->texto_linhas[l]; // passa como par_2
+        *k += 1;
+    }
+    atual->parametro_2[*k] = '\0'; // coloca '\0' no final do vetor
+
+    int tam = strlen(atual->parametro_2); // checa tamano do par_2
+
+    for (int roda = 0; roda < tam; roda++) // muda '\r' para '\0'
+    {
+        if (atual->parametro_2[roda] == '\r')
+            atual->parametro_2[roda] = '\0';
+    }
+
+    *entrar += 1;
+}
+
 void separar_linhas_em_parametros(head *lista, FILE *file_log) // separar as linhas em comando e parametros
 {
     no *atual = (no *)malloc(sizeof(no)); // cria no para percorrer a lista
@@ -55,71 +109,17 @@ void separar_linhas_em_parametros(head *lista, FILE *file_log) // separar as lin
     {
         int entrar = 0;
         int i, j = 0;
-        for (i = j; i < 200; i++)
+        for (i = j; atual->texto_linhas[i] != '\0'; i++)
         {
             if (atual->texto_linhas[i] == ' ' || atual->texto_linhas[i] == '\0') // procura espaço ou '\0'
             {
                 int k = 0;
                 if (entrar == 0) // checa se é o comando
-                {
-                    for (int l = j; l < i; l++)
-                    {
-                        atual->comando[k] = atual->texto_linhas[l]; // passa o conteúdo até o primeiro espaço como comando para o nó
-                        k++;
-                    }
-                    atual->comando[k] = '\0';           // coloca o '\0' no final do comando
-                    j = i + 1;                          // j = primeira posição após o espaço
-                    entrar++;                           // passa a entrar em parametro 1
-                    if (atual->texto_linhas[i] == '\0') // checa se o comando não tem parametros
-                    {
-                        fprintf(file_log, "LINHA %d: Faltam parametros na função\n", atual->numero_da_linha); // printa no arquivo que faltam parametros na funçao
-                        break;
-                    }
-                }
+                    checa_comando(atual, &i, &j, &k, &entrar, file_log);
                 else if (entrar == 1) // checa se é o parametro 1
-                {
-                    for (int l = j; l < i; l++)
-                    {
-                        atual->parametro_1[k] = atual->texto_linhas[l]; // passa o conteúdo de um espaço ao outro como parametro 1
-                        k++;
-                    }
-                    atual->parametro_1[k] = '\0'; // coloca '\0' como último elemento do par_1
-                    j = i + 1;                    // proxima posição depois do par_1
-                    entrar++;                     // passa pro par_2
-
-                    int tam = strlen(atual->parametro_1); // pega o tamanho do par_1
-
-                    for (int roda = 0; roda < tam; roda++) // checa e muda '\r' para '\0'
-                    {
-                        if (atual->parametro_1[roda] == '\r')
-                            atual->parametro_1[roda] = '\0';
-                    }
-
-                    if (atual->texto_linhas[i] == '\0') // se for o último elemento do vetor, sai do loop
-                        break;
-                }
+                    checa_parametro_1(atual, &i, &j, &k, &entrar, file_log);
                 else if (entrar == 2) // checa se é o par_2
-                {
-                    for (int l = j; l < i; l++) // pega o conteúdo até o prox espaço ou fim do texto
-                    {
-                        atual->parametro_2[k] = atual->texto_linhas[l]; // passa como par_2
-                        k++;
-                    }
-                    atual->parametro_2[k] = '\0'; // coloca '\0' no final do vetor
-
-                    int tam = strlen(atual->parametro_2); // checa tamano do par_2
-
-                    for (int roda = 0; roda < tam; roda++) // muda '\r' para '\0'
-                    {
-                        if (atual->parametro_2[roda] == '\r')
-                            atual->parametro_2[roda] = '\0';
-                    }
-
-                    entrar++;
-
-                    if (atual->texto_linhas[i] == '\0') // se for a última posição da linha, sai do loop
-                        break;
-                }
+                    checa_parametro_2(atual, &i, &j, &k, &entrar, file_log);
             }
         }
         if (entrar > 3)                                                                                       // olha se há mais parametros que o permitido
