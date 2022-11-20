@@ -17,6 +17,7 @@ void eliminar_comentarios(char *string)
         if (*string == '#')
         {
             *string = '\0';
+            break;
         }
         string++;
     }
@@ -28,11 +29,11 @@ void pegar_todo_o_texto_do_arquivo(FILE *arquivo, char *string, head *lista) // 
 
     while (!feof(arquivo))
     {
-        if (fgets(string, 200, arquivo) == NULL)
+        if (fgets(string, TAMANHO_MAX, arquivo) == NULL) //se a linha for nula, sai do while sem rodar o restante das funcoes
             continue;
-        eliminar_comentarios(string);
-        inserir_no(lista, string, numero_linhas);
-        numero_linhas++;
+        eliminar_comentarios(string); //elimina o que vier depois do # na string
+        inserir_no(lista, string, numero_linhas); //insere cada linha em um no na lista
+        numero_linhas++; // aumenta o numero da linha para passar como parametro no prox inserir_no
     }
 }
 
