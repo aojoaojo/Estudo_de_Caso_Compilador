@@ -2,4 +2,4 @@ write 3
 add 2 4
 read 3
 storeconst 1.3 20
-jump -1 -4 #outro teste
+jump 1 -4 #outro teste

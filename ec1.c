@@ -182,26 +182,10 @@ int eh_natural(char *texto) // checa se uma string é um natural
     }
     return 1;
 }
-void comando_read(no *atual, FILE *file_log) // checa se os parametros sao numeros permitidos e printa no file log
+void comando_read_write_store(no *atual, FILE *file_log) // checa se os parametros sao numeros permitidos e printa no file log
 {
     if (eh_natural(atual->parametro_1) == 1 && atual->parametro_2[0] == '\0' && atual->parametro_1[0] != '\0')
         fprintf(file_log, "LINHA %d: Comando '%s' feito com sucesso e parametro correto\n", atual->numero_da_linha, atual->comando);
-    else
-    {
-        if (atual->parametro_1[0] == '\0')
-            fprintf(file_log, "Linha %d: O comando '%s' Não possui parâmetros\n", atual->numero_da_linha, atual->comando);
-        else if (atual->parametro_2[0] != '\0')
-            fprintf(file_log, "Linha %d: O comando '%s' possui parâmetros a mais\n", atual->numero_da_linha, atual->comando);
-        else
-            fprintf(file_log, "LINHA %d: O comando '%s' apresenta parâmetros com valores inválidos\n", atual->numero_da_linha, atual->comando);
-    }
-}
-
-void comando_write(no *atual, FILE *file_log) // checa se os parametros sao numeros permitidos e printa no file log
-{
-    if (eh_natural(atual->parametro_1) == 1 && atual->parametro_2[0] == '\0')
-
-        fprintf(file_log, "LINHA %d: Comando '%s' feito com sucesso e parametros corretos\n", atual->numero_da_linha, atual->comando);
     else
     {
         if (atual->parametro_1[0] == '\0')
@@ -243,20 +227,6 @@ void comando_oper_arit(no *atual, FILE *file_log) // checa se os parametros sao 
     }
 }
 
-void comando_store(no *atual, FILE *file_log) // checa se os parametros sao numeros permitidos e printa no file log
-{
-    if (eh_natural(atual->parametro_1) == 1 && atual->parametro_2[0] == '\0')
-        fprintf(file_log, "LINHA %d: Comando '%s' feito com sucesso e parametros corretos\n", atual->numero_da_linha, atual->comando);
-    else
-    {
-        if (atual->parametro_1[0] == '\0')
-            fprintf(file_log, "Linha %d: O comando '%s' Não possui parâmetros\n", atual->numero_da_linha, atual->comando);
-        else if (atual->parametro_2[0] != '\0')
-            fprintf(file_log, "LINHA %d: O comando '%s' possui parâmetros a mais\n", atual->numero_da_linha, atual->comando);
-        else
-            fprintf(file_log, "LINHA %d: O comando '%s' apresenta parâmetros com valores inválidos\n", atual->numero_da_linha, atual->comando);
-    }
-}
 void comando_jump(no *atual, FILE *file_log) // checa se os parametros sao numeros permitidos e printa no file log
 {
     if (eh_natural(atual->parametro_1) == 1 && eh_inteiro(atual->parametro_2) == 1)
@@ -279,16 +249,12 @@ void rodar_comando_reconhecido(head *lista_corrigir, FILE *file_log) // roda os 
     {
         if (atual->comando_reconhecido == 1)
         {
-            if (strcmp(atual->comando, "read") == 0) // olha se o comando reconhecido é read
-                comando_read(atual, file_log);
-            else if (strcmp(atual->comando, "write") == 0) // olha se o comando reconhecido é write
-                comando_write(atual, file_log);
+            if ((strcmp(atual->comando, "read") == 0) || (strcmp(atual->comando, "write") == 0) || (strcmp(atual->comando, "store") == 0)) // olha se o comando reconhecido é read, write ou store
+                comando_read_write_store(atual, file_log);
             else if (strcmp(atual->comando, "storeconst") == 0) // olha se o comando reconhecido é storeconst
                 comando_storeconst(atual, file_log);
-            else if ((strcmp(atual->comando, "add") == 0) || (strcmp(atual->comando, "sub") == 0) || (strcmp(atual->comando, "mul") == 0) || (strcmp(atual->comando, "div") == 0)) // olha se o comando reconhecido é add
+            else if ((strcmp(atual->comando, "add") == 0) || (strcmp(atual->comando, "sub") == 0) || (strcmp(atual->comando, "mul") == 0) || (strcmp(atual->comando, "div") == 0)) // olha se o comando reconhecido é op aritmetica
                 comando_oper_arit(atual, file_log);
-            else if (strcmp(atual->comando, "store") == 0) // olha se o comando reconhecido é store
-                comando_store(atual, file_log);
             else if (strcmp(atual->comando, "jump") == 0) // olha se o comando reconhecido é jump
                 comando_jump(atual, file_log);
         }
