@@ -92,23 +92,22 @@ void checa_parametro_2(no *atual, int *i, int *j, int *k, int *entrar, FILE *fil
 
 void separar_linhas_em_parametros(head *lista, FILE *file_log) // separar as linhas em comando e parametros
 {
-    no *atual = (no *)malloc(sizeof(no)); // cria no para percorrer a lista
+    no *atual = lista->primeiro; // cria no para percorrer a lista
 
-    atual = lista->primeiro;
     while (atual != NULL) // percorre a lista até o último elemento
     {
-        int entrar = 0;
+        int entrar = EH_COMANDO;
         int i, j = 0;
         for (i = j; atual->texto_linhas[i] != '\0' || atual->texto_linhas[i-1] != '\0'; i++)
         {
             if (atual->texto_linhas[i] == ' ' || atual->texto_linhas[i] == '\0') // procura espaço ou '\0'
             {
                 int k = 0;
-                if (entrar == 0) // checa se é o comando
+                if (entrar == EH_COMANDO) // checa se é o comando
                     checa_comando(atual, &i, &j, &k, &entrar, file_log);
-                else if (entrar == 1) // checa se é o parametro 1
+                else if (entrar == EH_PARAMETRO_1) // checa se é o parametro 1
                     checa_parametro_1(atual, &i, &j, &k, &entrar, file_log);
-                else if (entrar == 2) // checa se é o par_2
+                else if (entrar == EH_PARAMETRO_2) // checa se é o par_2
                     checa_parametro_2(atual, &i, &j, &k, &entrar, file_log);
             }
         }
@@ -116,7 +115,6 @@ void separar_linhas_em_parametros(head *lista, FILE *file_log) // separar as lin
             fprintf(file_log, "LINHA %d: Numero maior de parâmetros que o esperado", atual->numero_da_linha); // print no file log
         atual = atual->proximo;
     }
-    free(atual);
 }
 
 void comparar_regras_com_corrigir(head *lista_regras, head *lista_corrigir) // compara os comandos dos nós da lista de correção com as de regras
@@ -310,7 +308,7 @@ int main(int argc, char *argv[])
     if (file_log == NULL)                                                            // checa se abriu
         printf("Falha ao criar arquivo log");
     FILE *arquivo_corrigir, *arquivo_regras; // criar files
-    char texto_corrigir[500] = {}, texto_regras[500] = {};
+    char texto_corrigir[TAMANHO_MAX] = {}, texto_regras[TAMANHO_MAX] = {};
     abrir_arquivo(&arquivo_corrigir, argv[1]);                              // abre arquivo corrigir
     abrir_arquivo(&arquivo_regras, argv[2]);                                // abre arquivo regras
     pegar_todo_o_texto_do_arquivo(arquivo_regras, texto_regras, lista_texto_regras);            // pega todo o texto do arquivo de regras e armazena em uma string

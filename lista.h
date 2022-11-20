@@ -1,13 +1,18 @@
 #ifndef meu_nome
 #define meu_nome
+#define EH_COMANDO 0
+#define EH_PARAMETRO_1 1
+#define EH_PARAMETRO_2 2
+#define TAMANHO_MAX 300
+#define TAMANHO_COMANDO 40
 
 typedef struct no no;
 struct no
 {
-    char texto_linhas[500];
-    char comando[20];
-    char parametro_1[20];
-    char parametro_2[20];
+    char texto_linhas[TAMANHO_MAX];
+    char comando[TAMANHO_COMANDO];
+    char parametro_1[TAMANHO_COMANDO];
+    char parametro_2[TAMANHO_COMANDO];
     no *proximo;
     int numero_da_linha;
     int comando_reconhecido;
