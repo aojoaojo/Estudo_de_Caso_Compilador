@@ -10,39 +10,29 @@ void abrir_arquivo(FILE **arquivo, char *caminho) // função para abrir os arqu
         printf("Erro ao abrir arquivo\n");
 }
 
-void pegar_todo_o_texto_do_arquivo(FILE *arquivo, char *string) // pega todo o texto do arquivo e armazena em uma string
+void eliminar_comentarios(char *string)
 {
-    char posicao_atual = 0;
-    int i = 0;
-    while ((posicao_atual = getc(arquivo)) != EOF) // roda até o end of file
+    while (*string != '\0')
     {
-        string[i] = posicao_atual; // armazena o caractere na string na posição i
-        i++;
+        if (*string == '#')
+        {
+            *string = '\0';
+        }
+        string++;
     }
 }
 
-void separar_string_em_linhas(head *linha, char *string) // separa a string em linhas e armazena cada linha em um no da lista
+void pegar_todo_o_texto_do_arquivo(FILE *arquivo, char *string, head *lista) // pega todo o texto do arquivo e armazena em uma string
 {
-    int i, j = 0, numero_linhas = 0;
-    for (i = j; i < 500; i++) // 'i' marca a posição final da linha, 'j' marca a inicial
+    int numero_linhas = 1;
+
+    while (!feof(arquivo))
     {
-        if (string[i] == '\n' || string[i] == '\0') // procura '\n' ou '\0'
-        {
-            char aux[500] = {};
-            numero_linhas++;             // contador do numero de linhas do arquivo
-            int l = 0;                   // 'l' inicia em zero para passar os caracteres para o vet aux
-            for (int k = j; k <= i; k++) // 'k' começa em 'j'(pos inicial da linha) e vai até 'i'(pos final da linha)
-            {
-                aux[l] = string[k];
-                if (k == i)
-                    aux[l] = '\0'; // insere '\0' na ultima posição do vetor
-                l++;
-            }
-            inserir_no(linha, aux, numero_linhas); // insere a linha e o número de linhas na lista
-            if (string[i] == '\0')                 // checa se é a última posição da linha
-                break;
-            j = i + 1; // j vira a primeira posição após a última posição da linha
-        }
+        if (fgets(string, 200, arquivo) == NULL)
+            continue;
+        eliminar_comentarios(string);
+        inserir_no(lista, string, numero_linhas);
+        numero_linhas++;
     }
 }
 
@@ -323,10 +313,8 @@ int main(int argc, char *argv[])
     char texto_corrigir[500] = {}, texto_regras[500] = {};
     abrir_arquivo(&arquivo_corrigir, argv[1]);                              // abre arquivo corrigir
     abrir_arquivo(&arquivo_regras, argv[2]);                                // abre arquivo regras
-    pegar_todo_o_texto_do_arquivo(arquivo_regras, texto_regras);            // pega todo o texto do arquivo de regras e armazena em uma string
-    pegar_todo_o_texto_do_arquivo(arquivo_corrigir, texto_corrigir);        // pega todo o texto a ser corrigido e armazena em uma string
-    separar_string_em_linhas(lista_texto_regras, texto_regras);             // separa strings de regras em linhas
-    separar_string_em_linhas(lista_texto_corrigir, texto_corrigir);         // separa strings de correção em linhas
+    pegar_todo_o_texto_do_arquivo(arquivo_regras, texto_regras, lista_texto_regras);            // pega todo o texto do arquivo de regras e armazena em uma string
+    pegar_todo_o_texto_do_arquivo(arquivo_corrigir, texto_corrigir, lista_texto_corrigir);        // pega todo o texto a ser corrigido e armazena em uma string
     separar_linhas_em_parametros(lista_texto_regras, file_log);             // separa comando e parametros de regras
     separar_linhas_em_parametros(lista_texto_corrigir, file_log);           // separa comando e parametros de correção
     comparar_regras_com_corrigir(lista_texto_regras, lista_texto_corrigir); // compara regras com correção
