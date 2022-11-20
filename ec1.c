@@ -109,7 +109,7 @@ void separar_linhas_em_parametros(head *lista, FILE *file_log) // separar as lin
     {
         int entrar = 0;
         int i, j = 0;
-        for (i = j; atual->texto_linhas[i] != '\0'; i++)
+        for (i = j; atual->texto_linhas[i] != '\0' || atual->texto_linhas[i-1] != '\0'; i++)
         {
             if (atual->texto_linhas[i] == ' ' || atual->texto_linhas[i] == '\0') // procura espaço ou '\0'
             {
