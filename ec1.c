@@ -29,11 +29,13 @@ void pegar_todo_o_texto_do_arquivo(FILE *arquivo, char *string, head *lista) // 
 
     while (!feof(arquivo))
     {
-        if (fgets(string, TAMANHO_MAX, arquivo) == NULL) //se a linha for nula, sai do while sem rodar o restante das funcoes
+        if (fgets(string, TAMANHO_MAX, arquivo) == NULL) // se a linha for nula, sai do while sem rodar o restante das funcoes
             continue;
-        eliminar_comentarios(string); //elimina o que vier depois do # na string
-        inserir_no(lista, string, numero_linhas); //insere cada linha em um no na lista
-        numero_linhas++; // aumenta o numero da linha para passar como parametro no prox inserir_no
+        eliminar_comentarios(string); // elimina o que vier depois do # na string
+        if (string[0] == '\0')              // olha se a linha nao possui nada e retorna para o while caso seja verdade
+            continue;
+        inserir_no(lista, string, numero_linhas); // insere cada linha em um no na lista
+        numero_linhas++;                          // aumenta o numero da linha para passar como parametro no prox inserir_no
     }
 }
 
@@ -99,7 +101,7 @@ void separar_linhas_em_parametros(head *lista, FILE *file_log) // separar as lin
     {
         int entrar = EH_COMANDO;
         int i, j = 0;
-        for (i = j; atual->texto_linhas[i] != '\0' || atual->texto_linhas[i-1] != '\0'; i++)
+        for (i = j; atual->texto_linhas[i] != '\0' || atual->texto_linhas[i - 1] != '\0'; i++)
         {
             if (atual->texto_linhas[i] == ' ' || atual->texto_linhas[i] == '\0') // procura espaço ou '\0'
             {
@@ -276,14 +278,14 @@ int main(int argc, char *argv[])
         printf("Falha ao criar arquivo log");
     FILE *arquivo_corrigir, *arquivo_regras; // criar files
     char texto_corrigir[TAMANHO_MAX] = {}, texto_regras[TAMANHO_MAX] = {};
-    abrir_arquivo(&arquivo_corrigir, argv[1]);                              // abre arquivo corrigir
-    abrir_arquivo(&arquivo_regras, argv[2]);                                // abre arquivo regras
-    pegar_todo_o_texto_do_arquivo(arquivo_regras, texto_regras, lista_texto_regras);            // pega todo o texto do arquivo de regras e armazena em uma string
-    pegar_todo_o_texto_do_arquivo(arquivo_corrigir, texto_corrigir, lista_texto_corrigir);        // pega todo o texto a ser corrigido e armazena em uma string
-    separar_linhas_em_parametros(lista_texto_regras, file_log);             // separa comando e parametros de regras
-    separar_linhas_em_parametros(lista_texto_corrigir, file_log);           // separa comando e parametros de correção
-    comparar_regras_com_corrigir(lista_texto_regras, lista_texto_corrigir); // compara regras com correção
-    rodar_comando_reconhecido(lista_texto_corrigir, file_log);              // roda comandos que foram reconhecidos
+    abrir_arquivo(&arquivo_corrigir, argv[1]);                                             // abre arquivo corrigir
+    abrir_arquivo(&arquivo_regras, argv[2]);                                               // abre arquivo regras
+    pegar_todo_o_texto_do_arquivo(arquivo_regras, texto_regras, lista_texto_regras);       // pega todo o texto do arquivo de regras e armazena em uma string
+    pegar_todo_o_texto_do_arquivo(arquivo_corrigir, texto_corrigir, lista_texto_corrigir); // pega todo o texto a ser corrigido e armazena em uma string
+    separar_linhas_em_parametros(lista_texto_regras, file_log);                            // separa comando e parametros de regras
+    separar_linhas_em_parametros(lista_texto_corrigir, file_log);                          // separa comando e parametros de correção
+    comparar_regras_com_corrigir(lista_texto_regras, lista_texto_corrigir);                // compara regras com correção
+    rodar_comando_reconhecido(lista_texto_corrigir, file_log);                             // roda comandos que foram reconhecidos
     no *atual_corrigir = lista_texto_corrigir->primeiro;
     while (atual_corrigir != NULL)
     {
