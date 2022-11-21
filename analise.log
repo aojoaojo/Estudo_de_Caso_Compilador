@@ -1,5 +1,6 @@
-LINHA 16: Comando 'add' feito com sucesso e parametros corretos
-LINHA 14: Comando 'jump' feito com sucesso e parametros corretos
+LINHA 9: Comando 'add' feito com sucesso e parametros corretos
+LINHA 7: Comando 'jump' feito com sucesso e parametros corretos
+LINHA 7: O jump possui um offset que aponta para uma linha válida
 LINHA 4: Comando 'storeconst' feito com sucesso e parametros corretos
 LINHA 3: Comando 'read' feito com sucesso e parametro correto
 LINHA 2: Comando 'add' feito com sucesso e parametros corretos

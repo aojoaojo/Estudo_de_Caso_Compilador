@@ -29,7 +29,7 @@ void pegar_todo_o_texto_do_arquivo(FILE *arquivo, char *string, head *lista) // 
 
     while (!feof(arquivo))
     {
-        numero_linhas++;                          // aumenta o numero da linha para passar como parametro no prox inserir_no
+        numero_linhas++;                                 // aumenta o numero da linha para passar como parametro no prox inserir_no
         if (fgets(string, TAMANHO_MAX, arquivo) == NULL) // se a linha for nula, sai do while sem rodar o restante das funcoes
             continue;
         eliminar_comentarios(string);                                    // elimina o que vier depois do # na string
@@ -125,10 +125,10 @@ void comparar_regras_com_corrigir(head *lista_regras, head *lista_corrigir) // c
     no *atual_corrigir = lista_corrigir->primeiro, *atual_regras = lista_regras->primeiro;
     int num_linhas_corrigir = atual_corrigir->numero_da_linha, num_linhas_regras = atual_regras->numero_da_linha, i, j;
 
-    while(atual_regras != NULL) // roda todas as linhas de regras
+    while (atual_regras != NULL) // roda todas as linhas de regras
     {
         atual_corrigir = lista_corrigir->primeiro; // volta para o inicio das linha de correção
-        while(atual_corrigir != NULL)  // roda todas as linhas para corrigir
+        while (atual_corrigir != NULL)             // roda todas as linhas para corrigir
         {
             if (strcmp(atual_corrigir->comando, atual_regras->comando) == 0) // compara se o comando de regras é igual ao comando dado na correção
                 atual_corrigir->comando_reconhecido = 1;                     // caso os comandos sejam iguais, marca o no atual como comando reconhecido
@@ -230,10 +230,36 @@ void comando_oper_arit(no *atual, FILE *file_log) // checa se os parametros sao 
     }
 }
 
-void comando_jump(no *atual, FILE *file_log) // checa se os parametros sao numeros permitidos e printa no file log
+int transformar_char_em_int(char *str)
+{
+    int par_int;
+    sscanf(str, "%d", &par_int);
+    return par_int;
+}
+
+void checar_offset_jump(no *atual, FILE *file_log, head *cabeca)
+{
+    no *atual_linha = cabeca->primeiro;
+    int ultima_linha = atual_linha->numero_da_linha, primeira_linha;
+    while (atual_linha != NULL)
+    {
+        primeira_linha = atual_linha->numero_da_linha;
+        atual_linha = atual_linha->proximo;
+    }
+    int par_int = transformar_char_em_int(atual->parametro_2);
+    if ((atual->numero_da_linha + par_int) <= ultima_linha && (atual->numero_da_linha + par_int) >= primeira_linha)
+        fprintf(file_log, "LINHA %d: O jump possui um offset que aponta para uma linha válida\n", atual->numero_da_linha);
+    else
+        fprintf(file_log, "LINHA %d: O jump possui um offset que aponta para uma linha inválida\n", atual->numero_da_linha);
+}
+
+void comando_jump(no *atual, FILE *file_log, head *cabeca) // checa se os parametros sao numeros permitidos e printa no file log
 {
     if (eh_natural(atual->parametro_1) == 1 && eh_inteiro(atual->parametro_2) == 1)
+    {
         fprintf(file_log, "LINHA %d: Comando '%s' feito com sucesso e parametros corretos\n", atual->numero_da_linha, atual->comando);
+        checar_offset_jump(atual, file_log, cabeca);
+    }
     else
     {
         if (atual->parametro_1[0] == '\0')
@@ -259,7 +285,7 @@ void rodar_comando_reconhecido(head *lista_corrigir, FILE *file_log) // roda os 
             else if ((strcmp(atual->comando, "add") == 0) || (strcmp(atual->comando, "sub") == 0) || (strcmp(atual->comando, "mul") == 0) || (strcmp(atual->comando, "div") == 0)) // olha se o comando reconhecido é op aritmetica
                 comando_oper_arit(atual, file_log);
             else if (strcmp(atual->comando, "jump") == 0) // olha se o comando reconhecido é jump
-                comando_jump(atual, file_log);
+                comando_jump(atual, file_log, lista_corrigir);
         }
         else
         {
