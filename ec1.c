@@ -25,17 +25,17 @@ void eliminar_comentarios(char *string)
 
 void pegar_todo_o_texto_do_arquivo(FILE *arquivo, char *string, head *lista) // pega todo o texto do arquivo e armazena em uma string
 {
-    int numero_linhas = 1;
+    int numero_linhas = 0;
 
     while (!feof(arquivo))
     {
+        numero_linhas++;                          // aumenta o numero da linha para passar como parametro no prox inserir_no
         if (fgets(string, TAMANHO_MAX, arquivo) == NULL) // se a linha for nula, sai do while sem rodar o restante das funcoes
             continue;
-        eliminar_comentarios(string); // elimina o que vier depois do # na string
-        if (string[0] == '\0')              // olha se a linha nao possui nada e retorna para o while caso seja verdade
+        eliminar_comentarios(string);                                    // elimina o que vier depois do # na string
+        if (string[0] == '\0' || string[0] == '\n' || string[0] == '\r') // olha se a linha nao possui nada e retorna para o while caso seja verdade
             continue;
         inserir_no(lista, string, numero_linhas); // insere cada linha em um no na lista
-        numero_linhas++;                          // aumenta o numero da linha para passar como parametro no prox inserir_no
     }
 }
 
@@ -125,10 +125,10 @@ void comparar_regras_com_corrigir(head *lista_regras, head *lista_corrigir) // c
     no *atual_corrigir = lista_corrigir->primeiro, *atual_regras = lista_regras->primeiro;
     int num_linhas_corrigir = atual_corrigir->numero_da_linha, num_linhas_regras = atual_regras->numero_da_linha, i, j;
 
-    for (i = 0; i < num_linhas_regras; i++) // roda todas as linhas de regras
+    while(atual_regras != NULL) // roda todas as linhas de regras
     {
         atual_corrigir = lista_corrigir->primeiro; // volta para o inicio das linha de correção
-        for (j = 0; j < num_linhas_corrigir; j++)  // roda todas as linhas para corrigir
+        while(atual_corrigir != NULL)  // roda todas as linhas para corrigir
         {
             if (strcmp(atual_corrigir->comando, atual_regras->comando) == 0) // compara se o comando de regras é igual ao comando dado na correção
                 atual_corrigir->comando_reconhecido = 1;                     // caso os comandos sejam iguais, marca o no atual como comando reconhecido
