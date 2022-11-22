@@ -330,7 +330,7 @@ int main(int argc, char *argv[])
 {
     head *lista_texto_corrigir = criar_lista(), *lista_texto_regras = criar_lista();                // cria lista
     FILE *file_log;                                                                                 // cria arquivo log
-    file_log = fopen("C:\\Users\\2211279\\Documents\\Estudo_de_Caso_Compilador\\analise.log", "w"); // abre arquivo log
+    file_log = fopen("analise.log", "w"); // abre arquivo log
     if (file_log == NULL)                                                                           // checa se abriu
         printf("Falha ao criar arquivo log");
     FILE *arquivo_corrigir, *arquivo_regras; // criar files
