@@ -1,9 +1,6 @@
-LINHA 14: O comando 'store' apresenta parâmetros com valores inválidos
-LINHA 12: O jump possui um offset que aponta para uma linha válida
+LINHA 14: O comando 'store' recebe apenas um valor natural. Foi passado: '4.5'
 LINHA 11: O jump possui um offset que aponta para uma linha inválida
 LINHA 10: O jump possui um offset que aponta para uma linha inválida
 LINHA 9: Comando 'stores' não identificado
-LINHA 6: O jump possui um offset que aponta para uma linha válida
-LINHA 4: O comando 'storeconst' apresenta parâmetros com valores inválidos
+LINHA 4: O comando 'storeconst' recebe um valor real e um valor natural. Foram passados: '1.2' e '3.2'
 LINHA 3: Comando 'readd' não identificado
-Linha 1: O comando 'read' Não possui parâmetros

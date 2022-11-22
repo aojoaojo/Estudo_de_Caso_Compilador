@@ -63,6 +63,13 @@ void checa_comando(no *atual, int *i, int *j, int *k, int *entrar, FILE *file_lo
     *entrar += 1;                                                                             // passa a entrar em parametro 1
     if (atual->texto_linhas[*i] == '\0')                                                      // checa se o comando não tem parametros
         fprintf(file_log, "LINHA %d: Faltam parametros na função\n", atual->numero_da_linha); // printa no arquivo que faltam parametros na funçao
+    int tam = strlen(atual->comando);                                                         // pega o tamanho do par_1
+
+    for (int roda = 0; roda < tam; roda++) // checa e muda '\r' para '\0'
+    {
+        if (atual->comando[roda] == ' ')
+            atual->comando[roda] = '\0';
+    }
 }
 
 void checa_parametro_1(no *atual, int *i, int *j, int *k, int *entrar, FILE *file_log)
@@ -80,7 +87,7 @@ void checa_parametro_1(no *atual, int *i, int *j, int *k, int *entrar, FILE *fil
 
     for (int roda = 0; roda < tam; roda++) // checa e muda '\r' para '\0'
     {
-        if (atual->parametro_1[roda] == '\r')
+        if (atual->parametro_1[roda] == '\r' || atual->parametro_1[roda] == ' ')
             atual->parametro_1[roda] = '\0';
     }
 }
@@ -98,11 +105,18 @@ void checa_parametro_2(no *atual, int *i, int *j, int *k, int *entrar, FILE *fil
 
     for (int roda = 0; roda < tam; roda++) // muda '\r' para '\0'
     {
-        if (atual->parametro_2[roda] == '\r')
+        if (atual->parametro_2[roda] == '\r' || atual->parametro_2[roda] == ' ')
             atual->parametro_2[roda] = '\0';
     }
 
     *entrar += 1;
+}
+
+void limpar_comando_e_parametros(no *atual)
+{
+    atual->comando[0] = '\0';
+    atual->parametro_1[0] = '\0';
+    atual->parametro_2[0] = '\0';
 }
 
 void separar_linhas_em_parametros(head *lista, FILE *file_log) // separar as linhas em comando e parametros
@@ -111,11 +125,12 @@ void separar_linhas_em_parametros(head *lista, FILE *file_log) // separar as lin
 
     while (atual != NULL) // percorre a lista até o último elemento
     {
+        limpar_comando_e_parametros(atual);
         int entrar = EH_COMANDO;
         int i, j = 0;
-        for (i = j; atual->texto_linhas[i] != '\0' || atual->texto_linhas[i - 1] != '\0'; i++)
+        for (i = j; atual->texto_linhas[i] != '\0'; i++) // || atual->texto_linhas[i - 1] != '\0'
         {
-            if (atual->texto_linhas[i] == ' ' || atual->texto_linhas[i] == '\0') // procura espaço ou '\0'
+            if ((atual->texto_linhas[i] == ' ' || atual->texto_linhas[i] == '\0' || atual->texto_linhas[i] == '\n') && (atual->texto_linhas[i + 1] != ' ')) // procura espaço ou '\0' ou '\n'
             {
                 int k = 0;
                 if (entrar == EH_COMANDO) // checa se é o comando
@@ -209,7 +224,7 @@ void comando_read_write_store(no *atual, FILE *file_log) // checa se os parametr
         else if (atual->parametro_2[0] != '\0')
             fprintf(file_log, "Linha %d: O comando '%s' possui parâmetros a mais\n", atual->numero_da_linha, atual->comando);
         else
-            fprintf(file_log, "LINHA %d: O comando '%s' apresenta parâmetros com valores inválidos\n", atual->numero_da_linha, atual->comando);
+            fprintf(file_log, "LINHA %d: O comando '%s' recebe apenas um valor natural. Foi passado: '%s'\n", atual->numero_da_linha, atual->comando, atual->parametro_1);
     }
 }
 
@@ -225,7 +240,7 @@ void comando_storeconst(no *atual, FILE *file_log) // checa se os parametros sao
         else if (atual->parametro_2[0] == '\0')
             fprintf(file_log, "LINHA %d: O comando '%s' possui parâmetros a menos\n", atual->numero_da_linha, atual->comando);
         else
-            fprintf(file_log, "LINHA %d: O comando '%s' apresenta parâmetros com valores inválidos\n", atual->numero_da_linha, atual->comando);
+            fprintf(file_log, "LINHA %d: O comando '%s' recebe um valor real e um valor natural. Foram passados: '%s' e '%s'\n", atual->numero_da_linha, atual->comando, atual->parametro_1, atual->parametro_2);
     }
 }
 
@@ -237,11 +252,11 @@ void comando_oper_arit(no *atual, FILE *file_log) // checa se os parametros sao 
     else
     {
         if (atual->parametro_1[0] == '\0')
-            fprintf(file_log, "Linha %d: O comando '%s' Não possui parâmetros\n", atual->numero_da_linha, atual->comando);
+            fprintf(file_log, "Linha %d: O comando '%s' não possui parâmetros\n", atual->numero_da_linha, atual->comando);
         else if (atual->parametro_2[0] == '\0')
             fprintf(file_log, "LINHA %d: O comando '%s' possui parâmetros a menos\n", atual->numero_da_linha, atual->comando);
         else
-            fprintf(file_log, "LINHA %d: O comando '%s' apresenta parâmetros com valores inválidos\n", atual->numero_da_linha, atual->comando);
+            fprintf(file_log, "LINHA %d: O comando '%s' necessita de dois valores naturais. Foram passados: '%s' e '%s'\n", atual->numero_da_linha, atual->comando, atual->parametro_1, atual->parametro_2);
     }
 }
 
@@ -263,7 +278,8 @@ void checar_offset_jump(no *atual, FILE *file_log, head *cabeca)
     }
     int par_int = transformar_char_em_int(atual->parametro_2);
     if ((atual->numero_da_linha + par_int) <= ultima_linha && (atual->numero_da_linha + par_int) >= primeira_linha)
-        fprintf(file_log, "LINHA %d: O jump possui um offset que aponta para uma linha válida\n", atual->numero_da_linha);
+        ;
+    // fprintf(file_log, "LINHA %d: O jump possui um offset que aponta para uma linha válida\n", atual->numero_da_linha);
     else
         fprintf(file_log, "LINHA %d: O jump possui um offset que aponta para uma linha inválida\n", atual->numero_da_linha);
 }
@@ -312,19 +328,19 @@ void rodar_comando_reconhecido(head *lista_corrigir, FILE *file_log) // roda os 
 
 int main(int argc, char *argv[])
 {
-    head *lista_texto_corrigir = criar_lista(), *lista_texto_regras = criar_lista(); // cria lista
-    FILE *file_log;                                                                  // cria arquivo log
-    file_log = fopen("analise.log", "w");                                            // abre arquivo log
-    if (file_log == NULL)                                                            // checa se abriu
+    head *lista_texto_corrigir = criar_lista(), *lista_texto_regras = criar_lista();                // cria lista
+    FILE *file_log;                                                                                 // cria arquivo log
+    file_log = fopen("C:\\Users\\2211279\\Documents\\Estudo_de_Caso_Compilador\\analise.log", "w"); // abre arquivo log
+    if (file_log == NULL)                                                                           // checa se abriu
         printf("Falha ao criar arquivo log");
     FILE *arquivo_corrigir, *arquivo_regras; // criar files
     char texto_corrigir[TAMANHO_MAX] = {}, texto_regras[TAMANHO_MAX] = {};
-    abrir_arquivo(&arquivo_corrigir, argv[1]); // abre arquivo corrigir
-    abrir_arquivo(&arquivo_regras, argv[2]);   // abre arquivo regras
-    pegar_todo_o_texto_do_arquivo(arquivo_regras, texto_regras, lista_texto_regras);       // pega todo o texto do arquivo de regras e armazena em uma string
+    abrir_arquivo(&arquivo_corrigir, argv[1]);                                             // abre arquivo corrigir
+    abrir_arquivo(&arquivo_regras, argv[2]);                                               // abre arquivo regras
     pegar_todo_o_texto_do_arquivo(arquivo_corrigir, texto_corrigir, lista_texto_corrigir); // pega todo o texto a ser corrigido e armazena em uma string
-    separar_linhas_em_parametros(lista_texto_regras, file_log);                            // separa comando e parametros de regras
+    pegar_todo_o_texto_do_arquivo(arquivo_regras, texto_regras, lista_texto_regras);       // pega todo o texto do arquivo de regras e armazena em uma string
     separar_linhas_em_parametros(lista_texto_corrigir, file_log);                          // separa comando e parametros de correção
+    separar_linhas_em_parametros(lista_texto_regras, file_log);                            // separa comando e parametros de regras
     comparar_regras_com_corrigir(lista_texto_regras, lista_texto_corrigir);                // compara regras com correção
     rodar_comando_reconhecido(lista_texto_corrigir, file_log);                             // roda comandos que foram reconhecidos
     no *atual_corrigir = lista_texto_corrigir->primeiro;
