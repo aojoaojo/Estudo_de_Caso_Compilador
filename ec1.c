@@ -23,6 +23,17 @@ void eliminar_comentarios(char *string)
     }
 }
 
+void eliminar_espacos(char *string)
+{
+    while (1)
+    {
+        if (string[0] == ' ')
+            memmove(string, string + 1, strlen(string));
+        else
+            break;
+    }
+}
+
 void pegar_todo_o_texto_do_arquivo(FILE *arquivo, char *string, head *lista) // pega todo o texto do arquivo e armazena em uma string
 {
     int numero_linhas = 0;
@@ -32,6 +43,7 @@ void pegar_todo_o_texto_do_arquivo(FILE *arquivo, char *string, head *lista) // 
         numero_linhas++;                                 // aumenta o numero da linha para passar como parametro no prox inserir_no
         if (fgets(string, TAMANHO_MAX, arquivo) == NULL) // se a linha for nula, sai do while sem rodar o restante das funcoes
             continue;
+        eliminar_espacos(string);
         eliminar_comentarios(string);                                    // elimina o que vier depois do # na string
         if (string[0] == '\0' || string[0] == '\n' || string[0] == '\r') // olha se a linha nao possui nada e retorna para o while caso seja verdade
             continue;
@@ -188,7 +200,8 @@ int eh_natural(char *texto) // checa se uma string é um natural
 void comando_read_write_store(no *atual, FILE *file_log) // checa se os parametros sao numeros permitidos e printa no file log
 {
     if (eh_natural(atual->parametro_1) == 1 && atual->parametro_2[0] == '\0' && atual->parametro_1[0] != '\0')
-        fprintf(file_log, "LINHA %d: Comando '%s' feito com sucesso e parametro correto\n", atual->numero_da_linha, atual->comando);
+        ;
+    // fprintf(file_log, "LINHA %d: Comando '%s' feito com sucesso e parametro correto\n", atual->numero_da_linha, atual->comando);
     else
     {
         if (atual->parametro_1[0] == '\0')
@@ -203,7 +216,8 @@ void comando_read_write_store(no *atual, FILE *file_log) // checa se os parametr
 void comando_storeconst(no *atual, FILE *file_log) // checa se os parametros sao numeros permitidos e printa no file log
 {
     if (eh_float(atual->parametro_1) == 1 && eh_natural(atual->parametro_2) == 1)
-        fprintf(file_log, "LINHA %d: Comando '%s' feito com sucesso e parametros corretos\n", atual->numero_da_linha, atual->comando);
+        ;
+    // fprintf(file_log, "LINHA %d: Comando '%s' feito com sucesso e parametros corretos\n", atual->numero_da_linha, atual->comando);
     else
     {
         if (atual->parametro_1[0] == '\0')
@@ -218,7 +232,8 @@ void comando_storeconst(no *atual, FILE *file_log) // checa se os parametros sao
 void comando_oper_arit(no *atual, FILE *file_log) // checa se os parametros sao numeros permitidos e printa no file log
 {
     if (eh_natural(atual->parametro_1) == 1 && eh_natural(atual->parametro_2) == 1)
-        fprintf(file_log, "LINHA %d: Comando '%s' feito com sucesso e parametros corretos\n", atual->numero_da_linha, atual->comando);
+        ;
+    // fprintf(file_log, "LINHA %d: Comando '%s' feito com sucesso e parametros corretos\n", atual->numero_da_linha, atual->comando);
     else
     {
         if (atual->parametro_1[0] == '\0')
@@ -257,7 +272,7 @@ void comando_jump(no *atual, FILE *file_log, head *cabeca) // checa se os parame
 {
     if (eh_natural(atual->parametro_1) == 1 && eh_inteiro(atual->parametro_2) == 1)
     {
-        fprintf(file_log, "LINHA %d: Comando '%s' feito com sucesso e parametros corretos\n", atual->numero_da_linha, atual->comando);
+        // fprintf(file_log, "LINHA %d: Comando '%s' feito com sucesso e parametros corretos\n", atual->numero_da_linha, atual->comando);
         checar_offset_jump(atual, file_log, cabeca);
     }
     else
@@ -304,8 +319,8 @@ int main(int argc, char *argv[])
         printf("Falha ao criar arquivo log");
     FILE *arquivo_corrigir, *arquivo_regras; // criar files
     char texto_corrigir[TAMANHO_MAX] = {}, texto_regras[TAMANHO_MAX] = {};
-    abrir_arquivo(&arquivo_corrigir, argv[1]);                                             // abre arquivo corrigir
-    abrir_arquivo(&arquivo_regras, argv[2]);                                               // abre arquivo regras
+    abrir_arquivo(&arquivo_corrigir, argv[1]); // abre arquivo corrigir
+    abrir_arquivo(&arquivo_regras, argv[2]);   // abre arquivo regras
     pegar_todo_o_texto_do_arquivo(arquivo_regras, texto_regras, lista_texto_regras);       // pega todo o texto do arquivo de regras e armazena em uma string
     pegar_todo_o_texto_do_arquivo(arquivo_corrigir, texto_corrigir, lista_texto_corrigir); // pega todo o texto a ser corrigido e armazena em uma string
     separar_linhas_em_parametros(lista_texto_regras, file_log);                            // separa comando e parametros de regras

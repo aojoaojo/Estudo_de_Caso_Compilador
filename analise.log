@@ -1,7 +1,9 @@
-LINHA 9: Comando 'add' feito com sucesso e parametros corretos
-LINHA 7: Comando 'jump' feito com sucesso e parametros corretos
-LINHA 7: O jump possui um offset que aponta para uma linha válida
-LINHA 4: Comando 'storeconst' feito com sucesso e parametros corretos
-LINHA 3: Comando 'read' feito com sucesso e parametro correto
-LINHA 2: Comando 'add' feito com sucesso e parametros corretos
-LINHA 1: Comando 'write' feito com sucesso e parametro correto
+LINHA 14: O comando 'store' apresenta parâmetros com valores inválidos
+LINHA 12: O jump possui um offset que aponta para uma linha válida
+LINHA 11: O jump possui um offset que aponta para uma linha inválida
+LINHA 10: O jump possui um offset que aponta para uma linha inválida
+LINHA 9: Comando 'stores' não identificado
+LINHA 6: O jump possui um offset que aponta para uma linha válida
+LINHA 4: O comando 'storeconst' apresenta parâmetros com valores inválidos
+LINHA 3: Comando 'readd' não identificado
+Linha 1: O comando 'read' Não possui parâmetros
