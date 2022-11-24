@@ -12,25 +12,25 @@ void abrir_arquivo(FILE **arquivo, char *caminho) // função para abrir os arqu
 
 void eliminar_comentarios(char *string)
 {
-    while (*string != '\0')
+    while (*string != '\0') // roda enquanto o caractere nao for /0
     {
-        if (*string == '#')
+        if (*string == '#') // se tiver algum comentário entra
         {
-            *string = '\0';
+            *string = '\0'; // troca o # por \0 e portanto elimina o comentário
             break;
         }
-        string++;
+        string++; // percorre a string
     }
 }
 
 void eliminar_espacos(char *string)
 {
-    while (1)
+    while (1) // loop infinito
     {
-        if (string[0] == ' ')
-            memmove(string, string + 1, strlen(string));
+        if (string[0] == ' ')                            // se a primeira posicao da string for espaço entra
+            memmove(string, string + 1, strlen(string)); // remove o espaço da primeira posicao da string
         else
-            break;
+            break; // sai do loop
     }
 }
 
@@ -38,12 +38,12 @@ void pegar_todo_o_texto_do_arquivo(FILE *arquivo, char *string, head *lista) // 
 {
     int numero_linhas = 0;
 
-    while (!feof(arquivo))
+    while (!feof(arquivo)) // roda enquanto nao chegar no fim do arquivo
     {
         numero_linhas++;                                 // aumenta o numero da linha para passar como parametro no prox inserir_no
         if (fgets(string, TAMANHO_MAX, arquivo) == NULL) // se a linha for nula, sai do while sem rodar o restante das funcoes
             continue;
-        eliminar_espacos(string);
+        eliminar_espacos(string);                                        // elimina espaços que estejam no começo da string
         eliminar_comentarios(string);                                    // elimina o que vier depois do # na string
         if (string[0] == '\0' || string[0] == '\n' || string[0] == '\r') // olha se a linha nao possui nada e retorna para o while caso seja verdade
             continue;
@@ -64,8 +64,7 @@ void checa_comando(no *atual, int *i, int *j, int *k, int *entrar, FILE *file_lo
     if (atual->texto_linhas[*i] == '\0')                                                      // checa se o comando não tem parametros
         fprintf(file_log, "LINHA %d: Faltam parametros na função\n", atual->numero_da_linha); // printa no arquivo que faltam parametros na funçao
     int tam = strlen(atual->comando);                                                         // pega o tamanho do par_1
-
-    for (int roda = 0; roda < tam; roda++) // checa e muda '\r' para '\0'
+    for (int roda = 0; roda < tam; roda++)                                                    // checa e muda '\r' para '\0'
     {
         if (atual->comando[roda] == ' ')
             atual->comando[roda] = '\0';
@@ -287,10 +286,8 @@ void checar_offset_jump(no *atual, FILE *file_log, head *cabeca)
 void comando_jump(no *atual, FILE *file_log, head *cabeca) // checa se os parametros sao numeros permitidos e printa no file log
 {
     if (eh_natural(atual->parametro_1) == 1 && eh_inteiro(atual->parametro_2) == 1)
-    {
-        // fprintf(file_log, "LINHA %d: Comando '%s' feito com sucesso e parametros corretos\n", atual->numero_da_linha, atual->comando);
         checar_offset_jump(atual, file_log, cabeca);
-    }
+    // fprintf(file_log, "LINHA %d: Comando '%s' feito com sucesso e parametros corretos\n", atual->numero_da_linha, atual->comando);
     else
     {
         if (atual->parametro_1[0] == '\0')
@@ -298,7 +295,7 @@ void comando_jump(no *atual, FILE *file_log, head *cabeca) // checa se os parame
         else if (atual->parametro_2[0] == '\0')
             fprintf(file_log, "LINHA %d: O comando '%s' possui parâmetros a menos\n", atual->numero_da_linha, atual->comando);
         else
-            fprintf(file_log, "LINHA %d: O comando '%s' apresenta parâmetros com valores inválidos\n", atual->numero_da_linha, atual->comando);
+            fprintf(file_log, "LINHA %d: O comando '%s' deve possuir um natural e um inteiro. Foram recebidos '%s' e '%s'\n", atual->numero_da_linha, atual->comando, atual->parametro_1, atual->parametro_2);
     }
 }
 
@@ -328,10 +325,10 @@ void rodar_comando_reconhecido(head *lista_corrigir, FILE *file_log) // roda os 
 
 int main(int argc, char *argv[])
 {
-    head *lista_texto_corrigir = criar_lista(), *lista_texto_regras = criar_lista();                // cria lista
-    FILE *file_log;                                                                                 // cria arquivo log
-    file_log = fopen("analise.log", "w"); // abre arquivo log
-    if (file_log == NULL)                                                                           // checa se abriu
+    head *lista_texto_corrigir = criar_lista(), *lista_texto_regras = criar_lista(); // cria lista
+    FILE *file_log;                                                                  // cria arquivo log
+    file_log = fopen("analise.log", "w");                                            // abre arquivo log
+    if (file_log == NULL)                                                            // checa se abriu
         printf("Falha ao criar arquivo log");
     FILE *arquivo_corrigir, *arquivo_regras; // criar files
     char texto_corrigir[TAMANHO_MAX] = {}, texto_regras[TAMANHO_MAX] = {};
