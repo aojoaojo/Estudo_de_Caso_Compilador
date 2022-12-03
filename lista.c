@@ -24,11 +24,28 @@ void inserir_no(head *cabeca, char *string, int num_linha)
     no *novo = (no *)malloc(sizeof(no));
     if (novo == NULL)
         printf("Não conseguiu alocar a memoria");
-    strcpy(novo->texto_linhas, string);
-    novo->comando_reconhecido = 0;
-    novo->numero_da_linha = num_linha;
-    novo->proximo = cabeca->primeiro;
-    cabeca->primeiro = novo;
+    if (cabeca->primeiro == NULL)
+    {
+        strcpy(novo->texto_linhas, string);
+        novo->comando_reconhecido = 0;
+        novo->numero_da_linha = num_linha;
+        novo->proximo = NULL;
+        cabeca->primeiro = novo;
+        return;
+    }
+    else
+    {
+        strcpy(novo->texto_linhas, string);
+        novo->comando_reconhecido = 0;
+        novo->numero_da_linha = num_linha;
+        novo->proximo = NULL;
+        no *atual = cabeca->primeiro;
+        while (atual->proximo != NULL)
+        {
+            atual = atual->proximo;
+        }
+        atual->proximo = novo;
+    }
 }
 
 void imprimir_lista_texto_linhas(head *cabeca)

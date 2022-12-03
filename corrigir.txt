@@ -1,5 +1,5 @@
       read  0     # este é um comentário
-read 1
+ read 1
 readd  2
  storeconst 1.2 3.2  # este é um comentário
      #esta linha só tem comentário
@@ -12,5 +12,5 @@ jump 3 12 # comentário nesta linha
     jump 3     2   # comentário
  sub  0  1 
 store 4.5
-write  4
+wsite  4
  #comentário no final
