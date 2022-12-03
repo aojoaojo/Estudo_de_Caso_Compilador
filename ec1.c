@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "lista.h"
+#include "lista.c"
 
 void abrir_arquivo(FILE **arquivo, char *caminho) // função para abrir os arquivos
 {
@@ -51,17 +51,17 @@ void pegar_todo_o_texto_do_arquivo(FILE *arquivo, char *string, head *lista) // 
     }
 }
 
-void checa_comando(no *atual, int *i, int *j, int *k, int *entrar, FILE *file_log)
+void checa_comando(no *atual, int *pos_atual, int *pos_inicio_leitura, int *pos_inicio_copia, int *entrar, FILE *file_log)
 {
-    for (int l = *j; l < *i; l++)
+    for (int aux_percorre_tamanho = *pos_inicio_leitura; aux_percorre_tamanho < *pos_atual; aux_percorre_tamanho++)
     {
-        atual->comando[*k] = atual->texto_linhas[l]; // passa o conteúdo até o primeiro espaço como comando para o nó
-        *k += 1;
+        atual->comando[*pos_inicio_copia] = atual->texto_linhas[aux_percorre_tamanho]; // passa o conteúdo até o primeiro espaço como comando para o nó
+        *pos_inicio_copia += 1;
     }
-    atual->comando[*k] = '\0';                                                                // coloca o '\0' no final do comando
-    *j = *i + 1;                                                                              // j = primeira posição após o espaço
+    atual->comando[*pos_inicio_copia] = '\0';                                                                // coloca o '\0' no final do comando
+    *pos_inicio_leitura = *pos_atual + 1;                                                                              // j = primeira posição após o espaço
     *entrar += 1;                                                                             // passa a entrar em parametro 1
-    if (atual->texto_linhas[*i] == '\0')                                                      // checa se o comando não tem parametros
+    if (atual->texto_linhas[*pos_atual] == '\0')                                                      // checa se o comando não tem parametros
         fprintf(file_log, "LINHA %d: Faltam parametros na função\n", atual->numero_da_linha); // printa no arquivo que faltam parametros na funçao
     int tam = strlen(atual->comando);                                                         // pega o tamanho do par_1
     for (int roda = 0; roda < tam; roda++)                                                    // checa e muda '\r' para '\0'
@@ -71,15 +71,15 @@ void checa_comando(no *atual, int *i, int *j, int *k, int *entrar, FILE *file_lo
     }
 }
 
-void checa_parametro_1(no *atual, int *i, int *j, int *k, int *entrar, FILE *file_log)
+void checa_parametro_1(no *atual, int *pos_atual, int *pos_inicio_leitura, int *pos_inicio_copia, int *entrar, FILE *file_log)
 {
-    for (int l = *j; l < *i; l++)
+    for (int aux_percorre_tamanho = *pos_inicio_leitura; aux_percorre_tamanho < *pos_atual; aux_percorre_tamanho++)
     {
-        atual->parametro_1[*k] = atual->texto_linhas[l]; // passa o conteúdo de um espaço ao outro como parametro 1
-        *k += 1;
+        atual->parametro_1[*pos_inicio_copia] = atual->texto_linhas[aux_percorre_tamanho]; // passa o conteúdo de um espaço ao outro como parametro 1
+        *pos_inicio_copia += 1;
     }
-    atual->parametro_1[*k] = '\0'; // coloca '\0' como último elemento do par_1
-    *j = *i + 1;                   // proxima posição depois do par_1
+    atual->parametro_1[*pos_inicio_copia] = '\0'; // coloca '\0' como último elemento do par_1
+    *pos_inicio_leitura = *pos_atual + 1;  // proxima posição depois do par_1
     *entrar += 1;                  // passa pro par_2
 
     int tam = strlen(atual->parametro_1); // pega o tamanho do par_1
@@ -91,14 +91,14 @@ void checa_parametro_1(no *atual, int *i, int *j, int *k, int *entrar, FILE *fil
     }
 }
 
-void checa_parametro_2(no *atual, int *i, int *j, int *k, int *entrar, FILE *file_log)
+void checa_parametro_2(no *atual, int *pos_atual, int *pos_inicio_leitura, int *pos_inicio_copia, int *entrar, FILE *file_log)
 {
-    for (int l = *j; l < *i; l++) // pega o conteúdo até o prox espaço ou fim do texto
+    for (int aux_percorre_tamanho = *pos_inicio_leitura; aux_percorre_tamanho < *pos_atual; aux_percorre_tamanho++) // pega o conteúdo até o prox espaço ou fim do texto
     {
-        atual->parametro_2[*k] = atual->texto_linhas[l]; // passa como par_2
-        *k += 1;
+        atual->parametro_2[*pos_inicio_copia] = atual->texto_linhas[aux_percorre_tamanho]; // passa como par_2
+        *pos_inicio_copia += 1;
     }
-    atual->parametro_2[*k] = '\0'; // coloca '\0' no final do vetor
+    atual->parametro_2[*pos_inicio_copia] = '\0'; // coloca '\0' no final do vetor
 
     int tam = strlen(atual->parametro_2); // checa tamano do par_2
 
@@ -126,18 +126,18 @@ void separar_linhas_em_parametros(head *lista, FILE *file_log) // separar as lin
     {
         limpar_comando_e_parametros(atual);
         int entrar = EH_COMANDO;
-        int i, j = 0;
-        for (i = j; atual->texto_linhas[i] != '\0'; i++) // || atual->texto_linhas[i - 1] != '\0'
+        int pos_atual, pos_inicio_leitura = 0;
+        for (pos_atual = pos_inicio_leitura; atual->texto_linhas[pos_atual] != '\0'; pos_atual++) // || atual->texto_linhas[i - 1] != '\0'
         {
-            if ((atual->texto_linhas[i] == ' ' || atual->texto_linhas[i] == '\0' || atual->texto_linhas[i] == '\n') && (atual->texto_linhas[i + 1] != ' ')) // procura espaço ou '\0' ou '\n'
+            if ((atual->texto_linhas[pos_atual] == ' ' || atual->texto_linhas[pos_atual] == '\0' || atual->texto_linhas[pos_atual] == '\n') && (atual->texto_linhas[pos_atual + 1] != ' ')) // procura espaço ou '\0' ou '\n'
             {
-                int k = 0;
+                int pos_inicio_copia = 0;
                 if (entrar == EH_COMANDO) // checa se é o comando
-                    checa_comando(atual, &i, &j, &k, &entrar, file_log);
+                    checa_comando(atual, &pos_atual, &pos_inicio_leitura, &pos_inicio_copia, &entrar, file_log);
                 else if (entrar == EH_PARAMETRO_1) // checa se é o parametro 1
-                    checa_parametro_1(atual, &i, &j, &k, &entrar, file_log);
+                    checa_parametro_1(atual, &pos_atual, &pos_inicio_leitura, &pos_inicio_copia, &entrar, file_log);
                 else if (entrar == EH_PARAMETRO_2) // checa se é o par_2
-                    checa_parametro_2(atual, &i, &j, &k, &entrar, file_log);
+                    checa_parametro_2(atual, &pos_atual, &pos_inicio_leitura, &pos_inicio_copia, &entrar, file_log);
             }
         }
         if (entrar > 3)                                                                                       // olha se há mais parametros que o permitido
@@ -325,9 +325,15 @@ void rodar_comando_reconhecido(head *lista_corrigir, FILE *file_log) // roda os 
 
 int main(int argc, char *argv[])
 {
+    if (argc != 4)
+    {
+        printf("Número de parametros incorreto. São necessários 3 parametros: O arquivo a ser corrigido, as regras e o arquivo log, respectivamente.\n");
+        return -1;
+    }
+
     head *lista_texto_corrigir = criar_lista(), *lista_texto_regras = criar_lista(); // cria lista
     FILE *file_log;                                                                  // cria arquivo log
-    file_log = fopen("analise.log", "w");                                            // abre arquivo log
+    file_log = fopen(argv[3], "w");                                                  // abre arquivo log
     if (file_log == NULL)                                                            // checa se abriu
         printf("Falha ao criar arquivo log");
     FILE *arquivo_corrigir, *arquivo_regras; // criar files
